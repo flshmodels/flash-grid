@@ -35,10 +35,17 @@ function Adapter.plan(selection, options)
             })
         end
     end
-    local plan = Rules.plan(rows, options)
-    for _, entry in ipairs(plan) do
-        local old, new = entry.before.position, entry.after
-        entry.label = string.format("%s\n(%.4f, %.4f, %.4f) -> (%.4f, %.4f, %.4f)", entry.before.target:GetFullName(), old.X, old.Y, old.Z, new.X, new.Y, new.Z)
+    local plan = {}
+    for _, entry in ipairs(Rules.plan(rows, options)) do
+        local before, after = entry.before, entry.after
+        local destination = Vector3.new(after.X, after.Y, after.Z)
+        entry.destination = before.cframe + (destination - before.cframe.Position)
+        -- Avoid empty undo entries when engine precision rounds back to the same position.
+        if entry.destination ~= before.cframe then
+            local old, new = before.position, entry.destination.Position
+            entry.label = string.format("%s\n(%.4f, %.4f, %.4f) -> (%.4f, %.4f, %.4f)", before.target:GetFullName(), old.X, old.Y, old.Z, new.X, new.Y, new.Z)
+            table.insert(plan, entry)
+        end
     end
     return plan
 end
@@ -56,9 +63,7 @@ function Adapter.validate(plan)
 end
 
 function Adapter.write(entry)
-    local before, after = entry.before, entry.after
-    local destination = Vector3.new(after.X, after.Y, after.Z)
-    before.target.CFrame = before.cframe + (destination - before.cframe.Position)
+    entry.before.target.CFrame = entry.destination
 end
 
 return Adapter
