@@ -17,7 +17,7 @@ Select loose, anchored BaseParts in Workspace. Enter a grid size, such as `0.5`,
 
 For example, `(0.4, 2.2, -0.5)` with a 1-stud XZ grid becomes `(0, 2.2, -1)`. Halfway values round away from zero. The origin is `(0, 0, 0)`; this version has no custom or local grid.
 
-Rotation and size are preserved. Each selected part moves independently. The preview is a text list, not ghost geometry in the viewport.
+Rotation and size are preserved. Changes that round back to the same CFrame at engine precision are skipped. Each selected part moves independently. The preview is a text list, not ghost geometry in the viewport.
 
 ## Limits
 
